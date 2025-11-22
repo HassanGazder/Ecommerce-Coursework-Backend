@@ -106,7 +106,30 @@ app.post("/placeorder", (req, res, next) => {
     }
   );
 });
+app.put("/update-spaces", async (req, res) => {
+  const cart = req.body.cart;
 
+  if (!cart || cart.length === 0) {
+    return res.status(400).send({ msg: "Cart is empty" });
+  }
+
+  const productsCollection = db.collection("products");
+
+  try {
+    for (let item of cart) {
+      await productsCollection.updateOne(
+        { id: item.id },
+        { $inc: { Spaces: -item.quantity } }
+      );
+    }
+
+    res.json({ msg: "Spaces updated successfully" });
+
+  } catch (err) {
+    console.log("Error updating spaces:", err);
+    res.status(500).send({ msg: "Failed to update spaces" });
+  }
+});
 // app.put("/update-spaces", async (req, res) => {
 //   const cart = req.body.cart; 
 //   // cart example: [{ id: 1, quantity: 2 }, {id: 3, quantity: 1}]
