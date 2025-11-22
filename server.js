@@ -1,5 +1,9 @@
 const express = require("express");
 const app = express();
+const logger = require("./logger");
+
+app.use(logger);
+
 
 app.use(express.json());
 app.set("PORT", 3000);
