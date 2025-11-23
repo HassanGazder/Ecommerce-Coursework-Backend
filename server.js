@@ -1,8 +1,17 @@
 const express = require("express");
+const fs = require("fs");
+const path = require("path");
+
 const app = express();
 const logger = require("./logger");
 
 app.use(logger);
+app.use("/images", express.static(path.join(__dirname, "images")));
+
+// 2️⃣ IMAGE NOT FOUND ERROR HANDLER
+app.use("/images", (req, res) => {
+  return res.status(404).json({ error: "Image not found" });
+});
 
 
 app.use(express.json());
