@@ -15,7 +15,7 @@ app.use("/images", (req, res) => {
 
 
 app.use(express.json());
-app.set("PORT", 3000);
+// app.set("PORT", 3000);
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -170,7 +170,8 @@ app.put("/update-spaces", async (req, res) => {
 //   }
 // });
 
+const port = 3000 || process.env.PORT;
 
-app.listen(3000, () => {
+app.listen(port, () => {
   console.log(`Server started on port ${app.get("PORT")}`);
 });
