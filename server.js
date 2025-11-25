@@ -52,13 +52,7 @@ app.get("/collection/:collectionName", (req, res, next) => {
     res.send(results);
   });
 });
-// adding post method to add data to database
-// app.post("/collection/:collectionName", (req, res, next) => {
-//   req.collection.insert(req.body, (e, result) => {
-//     if (e) return next(e);
-//     res.send(result.ops);
-//   });
-// });
+
 app.get("/collection/:collectionName/:id", (req, res, next) => {
   req.collection.findOne({ _id: new ObjectId(req.params.id) }, (e, result) => {
     if (e) return next(e);
@@ -77,16 +71,8 @@ app.put("/collection/:collectionName/:id", (req, res, next) => {
     }
   );
 });
-app.delete("/collection/:collectionName/:id", (req, res, next) => {
-  req.collection.deleteOne(
-    { _id: new ObjectId(req.params.id) },
-    { $set: req.body },
-    (e, result) => {
-      if (e) return next(e);
-      res.send(result);
-    }
-  );
-});
+
+
 
 app.post("/placeorder", (req, res, next) => {
   const name = req.body.name;
@@ -143,35 +129,35 @@ app.put("/update-spaces", async (req, res) => {
     res.status(500).send({ msg: "Failed to update spaces" });
   }
 });
-// app.put("/update-spaces", async (req, res) => {
-//   const cart = req.body.cart; 
-//   // cart example: [{ id: 1, quantity: 2 }, {id: 3, quantity: 1}]
+app.get("/search", (req, res) => {
+  const search = req.query.search || "";
 
-//   if (!cart || cart.length === 0) {
-//     return res.status(400).json({ message: "Cart missing" });
-//   }
+  // If search box empty → return all products
+  if (!search.trim()) {
+    return db.collection("products")
+      .find({})
+      .toArray((err, data) => {
+        if (err) return res.status(500).send({ msg: "DB error" });
+        res.send(data);
+      });
+  }
 
-//   try {
-//     const productsCollection = db.collection("products");
-
-//     // Loop through cart items and update spaces
-//     for (let item of cart) {
-//       await productsCollection.updateOne(
-//         { id: item.id },
-//         { $inc: { spaces: -item.quantity } } // subtract spaces
-//       );
-//     }
-
-//     res.json({ message: "Spaces updated successfully" });
-
-//   } catch (err) {
-//     console.log("Error updating spaces:", err);
-//     res.status(500).json({ message: "Failed to update spaces" });
-//   }
-// });
+  // Search in Subject or Location fields
+  db.collection("products")
+    .find({
+      $or: [
+        { Subject: { $regex: search, $options: "i" } },   // case-insensitive
+        { Location: { $regex: search, $options: "i" } }
+      ]
+    })
+    .toArray((err, data) => {
+      if (err) return res.status(500).send({ msg: "DB error" });
+      res.send(data);
+    });
+});
 
 const port = 3000 || process.env.PORT;
 
 app.listen(port, () => {
-  console.log(`Server started on port ${app.get("PORT")}`);
+  console.log(`Server started on port ${app.get("port")}`);
 });
