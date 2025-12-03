@@ -51,10 +51,6 @@ app.get("/collection/:collectionName", (req, res, next) => {
   });
 });
 
-
-
-
-
 app.post("/placeorder", (req, res, next) => {
   const name = req.body.name;
   const number = req.body.number;
@@ -140,5 +136,5 @@ app.get("/search", (req, res) => {
 const port = 3000 || process.env.PORT;
 
 app.listen(port, () => {
-  console.log(`Server started on port ${app.get("port")}`);
+  console.log(`Server started on Port ${app.get("port")}`);
 });
