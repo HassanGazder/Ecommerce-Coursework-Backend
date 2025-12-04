@@ -61,7 +61,6 @@ app.post("/placeorder", (req, res, next) => {
   }
 
   const ordersCollection = db.collection("orders");
-  const productsCollection = db.collection("products");
 
   ordersCollection.insertOne(
     {
